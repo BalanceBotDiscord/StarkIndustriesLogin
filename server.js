@@ -19,7 +19,7 @@ app.post('/chat', async (req, res) => {
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${process.env.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}`,
+                    'Authorization': `Bearer ${process.env.OPEN_AI_KEY=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}`,
                     'Content-Type': 'application/json'
                 }
             }
