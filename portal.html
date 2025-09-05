@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarvis AI Portal</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+    body {
+        margin: 0; padding: 0;
+        font-family: 'Orbitron', sans-serif;
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        color: #00ffff;
+        display: flex; justify-content: center; align-items: center;
+        height: 100vh;
+    }
+    .jarvis-container {
+        background: rgba(0,0,0,0.85);
+        padding: 30px; border-radius: 15px;
+        width: 500px; max-width: 95%;
+        display: flex; flex-direction: column;
+        box-shadow: 0 0 30px rgba(0,255,255,0.5);
+    }
+    .chat-box {
+        height: 300px; overflow-y: auto;
+        border: 1px solid #00ffff; border-radius: 10px;
+        padding: 10px; margin-bottom: 10px;
+        background: rgba(0,0,0,0.6);
+    }
+    .chat-box p { margin: 5px 0; }
+    .input-container { display: flex; }
+    .input-container input {
+        flex: 1; padding: 12px;
+        border-radius: 8px 0 0 8px; border: 1px solid #00ffff;
+        background: rgba(0,0,0,0.6); color: #00ffff; font-size: 16px;
+    }
+    .input-container button {
+        padding: 12px; background-color: #00ffff; color: black;
+        border: none; border-radius: 0 8px 8px 0; cursor: pointer;
+    }
+    .input-container button:hover { background-color: #00cccc; }
+</style>
+</head>
+<body>
+<div class="jarvis-container">
+    <div class="chat-box" id="chatBox">
+        <p><strong>Jarvis:</strong> System Online. How can I assist you, Mr. Stark?</p>
+    </div>
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type a command..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+async function sendMessage() {
+    const userMessage = document.getElementById('userInput').value;
+    if(!userMessage) return;
+
+    appendMessage('You', userMessage);
+    document.getElementById('userInput').value = '';
+
+    try {
+        const response = await fetch('/chat', {   // backend endpoint
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+        });
+        const data = await response.json();
+        appendMessage('Jarvis', data.reply);
+    } catch(error) {
+        console.error(error);
+        appendMessage('Jarvis', 'An error occurred. Please try again later.');
+    }
+}
+
+function appendMessage(sender, message) {
+    const chatBox = document.getElementById('chatBox');
+    const p = document.createElement('p');
+    p.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatBox.appendChild(p);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if(e.key === 'Enter') sendMessage();
+});
+</script>
+</body>
+</html>
